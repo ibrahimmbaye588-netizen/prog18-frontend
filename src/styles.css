@@ -60,15 +60,19 @@ label {
   margin-top: 16px;
 }
 
-input {
+input,
+select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--couleur-bordure);
   border-radius: 8px;
   font-size: 14px;
+  font-family: inherit;
+  background: white;
 }
 
-input:focus {
+input:focus,
+select:focus {
   outline: none;
   border-color: var(--couleur-primaire);
 }
@@ -182,7 +186,7 @@ button:disabled {
   cursor: default;
 }
 
-/* --- Catalogue --- */
+/* --- Catalogue / listes génériques --- */
 
 .entete-catalogue {
   display: flex;
@@ -283,5 +287,75 @@ button:disabled {
 }
 
 .bouton-danger {
+  color: var(--couleur-erreur);
+}
+
+/* --- Devis --- */
+
+.tableau-lignes-devis {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.tableau-lignes-devis th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--couleur-texte-doux);
+  padding: 6px 6px;
+}
+
+.tableau-lignes-devis td {
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+
+.tableau-lignes-devis input,
+.tableau-lignes-devis select {
+  margin-top: 0;
+  padding: 7px 8px;
+}
+
+.champ-etroit {
+  width: 70px;
+}
+
+.cellule-sous-total {
+  white-space: nowrap;
+  color: var(--couleur-texte-doux);
+  font-size: 13px;
+}
+
+.total-devis {
+  text-align: right;
+  margin-top: 16px;
+  font-size: 15px;
+}
+
+.badge-statut {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--couleur-bordure);
+  color: var(--couleur-texte-doux);
+}
+
+.badge-statut-envoye {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-statut-accepte {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-statut-refuse {
+  background: var(--couleur-erreur-fond);
   color: var(--couleur-erreur);
 }
