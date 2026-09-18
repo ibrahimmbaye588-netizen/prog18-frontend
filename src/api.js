@@ -40,19 +40,22 @@ async function appelApi(chemin, options = {}) {
       headers: entetes,
     });
   } catch (erreurReseau) {
-    // "Failed to fetch" atterrit ici : le service Render peut être
-    // en train de se réveiller (jusqu'à 50-60s sur le plan gratuit).
     throw new Error(
       "Impossible de contacter le serveur. S'il n'a pas été utilisé récemment, " +
         "il peut mettre jusqu'à une minute à se réveiller — réessaie dans quelques instants."
     );
   }
 
+  // 204 No Content (ex: suppression) : pas de corps à parser
+  if (reponse.status === 204) {
+    return null;
+  }
+
   let corps = null;
   try {
     corps = await reponse.json();
   } catch {
-    // Réponse sans corps JSON (ex: 204), ce n'est pas forcément une erreur.
+    // Réponse sans corps JSON, ce n'est pas forcément une erreur.
   }
 
   if (!reponse.ok) {
@@ -62,6 +65,8 @@ async function appelApi(chemin, options = {}) {
 
   return corps;
 }
+
+// --- Auth -------------------------------------------------------------
 
 export function inscription({ email, mot_de_passe, nom_entreprise }) {
   return appelApi("/auth/inscription", {
@@ -79,4 +84,30 @@ export function connexion({ email, mot_de_passe }) {
 
 export function obtenirUtilisateurCourant() {
   return appelApi("/auth/moi");
+}
+
+// --- Articles -----------------------------------------------------------
+
+export function listerArticles() {
+  return appelApi("/articles");
+}
+
+export function creerArticle(donnees) {
+  return appelApi("/articles", {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function modifierArticle(id, donnees) {
+  return appelApi(`/articles/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function supprimerArticle(id) {
+  return appelApi(`/articles/${id}`, {
+    method: "DELETE",
+  });
 }

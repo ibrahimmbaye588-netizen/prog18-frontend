@@ -142,3 +142,146 @@ button:disabled {
   color: var(--couleur-texte-doux);
   border: 1px solid var(--couleur-bordure);
 }
+
+/* --- Modules du tableau de bord --- */
+
+.grille-modules {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.carte-module {
+  max-width: none;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.carte-module:hover {
+  border-color: var(--couleur-primaire);
+}
+
+.carte-module h3 {
+  margin: 8px 0 4px;
+  font-size: 16px;
+}
+
+.carte-module p.sous-titre {
+  margin: 0;
+}
+
+.icone-module {
+  font-size: 28px;
+}
+
+.carte-module-desactivee {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* --- Catalogue --- */
+
+.entete-catalogue {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0 16px;
+}
+
+.entete-catalogue h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.bouton-principal {
+  width: auto;
+  margin-top: 0;
+  padding: 9px 16px;
+}
+
+.carte-formulaire {
+  max-width: none;
+  margin-bottom: 24px;
+}
+
+.carte-formulaire h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.ligne-champs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.boutons-formulaire {
+  display: flex;
+  gap: 8px;
+}
+
+.boutons-formulaire button {
+  margin-top: 24px;
+}
+
+.bouton-annuler {
+  background: transparent;
+  color: var(--couleur-texte-doux);
+  border: 1px solid var(--couleur-bordure);
+}
+
+.tableau-articles {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tableau-articles th {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--couleur-texte-doux);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.tableau-articles td {
+  padding: 12px;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.tableau-articles tr:last-child td {
+  border-bottom: none;
+}
+
+.cellule-description {
+  color: var(--couleur-texte-doux);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cellule-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.bouton-lien {
+  width: auto;
+  margin: 0 0 0 12px;
+  background: transparent;
+  color: var(--couleur-primaire);
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.bouton-danger {
+  color: var(--couleur-erreur);
+}
