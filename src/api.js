@@ -111,3 +111,29 @@ export function supprimerArticle(id) {
     method: "DELETE",
   });
 }
+
+// --- Devis ----------------------------------------------------------------
+
+export function listerDevis() {
+  return appelApi("/devis");
+}
+
+export function creerDevis(donnees) {
+  return appelApi("/devis", {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function modifierDevis(id, donnees) {
+  return appelApi(`/devis/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function supprimerDevis(id) {
+  return appelApi(`/devis/${id}`, {
+    method: "DELETE",
+  });
+}
