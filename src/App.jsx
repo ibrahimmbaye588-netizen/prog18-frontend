@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Connexion from "./pages/Connexion.jsx";
 import Inscription from "./pages/Inscription.jsx";
 import TableauDeBord from "./pages/TableauDeBord.jsx";
+import Catalogue from "./pages/Catalogue.jsx";
 import { obtenirToken } from "./api.js";
 
 function RouteProtegee({ enfant }) {
@@ -16,6 +17,10 @@ export default function App() {
       <Route
         path="/tableau-de-bord"
         element={<RouteProtegee enfant={<TableauDeBord />} />}
+      />
+      <Route
+        path="/catalogue"
+        element={<RouteProtegee enfant={<Catalogue />} />}
       />
     </Routes>
   );
