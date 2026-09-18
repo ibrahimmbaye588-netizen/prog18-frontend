@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { obtenirUtilisateurCourant, supprimerToken } from "../api.js";
 
 export default function TableauDeBord() {
@@ -12,7 +12,6 @@ export default function TableauDeBord() {
       .then(setUtilisateur)
       .catch((err) => {
         setErreur(err.message);
-        // Token invalide ou expiré : retour à la connexion
         supprimerToken();
         navigate("/");
       });
@@ -46,9 +45,26 @@ export default function TableauDeBord() {
           <strong>{utilisateur.email}</strong>
           {utilisateur.nom_entreprise && ` — ${utilisateur.nom_entreprise}`}
         </p>
-        <p className="sous-titre" style={{ marginTop: 24 }}>
-          Le catalogue, les devis et le stock arriveront ici prochainement.
-        </p>
+      </div>
+
+      <div className="grille-modules">
+        <Link to="/catalogue" className="carte carte-module">
+          <span className="icone-module">📦</span>
+          <h3>Catalogue</h3>
+          <p className="sous-titre">Gérer les articles et leur stock</p>
+        </Link>
+
+        <div className="carte carte-module carte-module-desactivee">
+          <span className="icone-module">📄</span>
+          <h3>Devis</h3>
+          <p className="sous-titre">Bientôt disponible</p>
+        </div>
+
+        <div className="carte carte-module carte-module-desactivee">
+          <span className="icone-module">📊</span>
+          <h3>Stock</h3>
+          <p className="sous-titre">Bientôt disponible</p>
+        </div>
       </div>
     </div>
   );
