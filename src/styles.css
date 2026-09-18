@@ -1,0 +1,144 @@
+:root {
+  --couleur-fond: #f4f5f7;
+  --couleur-carte: #ffffff;
+  --couleur-texte: #1f2933;
+  --couleur-texte-doux: #6b7280;
+  --couleur-primaire: #1f2933;
+  --couleur-bordure: #e2e5e9;
+  --couleur-erreur: #b91c1c;
+  --couleur-erreur-fond: #fef2f2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--couleur-fond);
+  color: var(--couleur-texte);
+}
+
+.page-centree {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.carte {
+  background: var(--couleur-carte);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.carte h1 {
+  font-size: 20px;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carte p.sous-titre {
+  color: var(--couleur-texte-doux);
+  margin: 0 0 24px;
+  font-size: 14px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  margin-top: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--couleur-primaire);
+}
+
+.erreur {
+  background: var(--couleur-erreur-fond);
+  color: var(--couleur-erreur);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 11px;
+  background: var(--couleur-primaire);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lien-secondaire {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--couleur-texte-doux);
+  text-decoration: none;
+}
+
+.lien-secondaire:hover {
+  text-decoration: underline;
+}
+
+.api-info {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--couleur-bordure);
+  font-size: 11px;
+  color: var(--couleur-texte-doux);
+  word-break: break-all;
+}
+
+.tableau-de-bord {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.entete-tableau {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.bouton-deconnexion {
+  width: auto;
+  margin-top: 0;
+  background: transparent;
+  color: var(--couleur-texte-doux);
+  border: 1px solid var(--couleur-bordure);
+}
