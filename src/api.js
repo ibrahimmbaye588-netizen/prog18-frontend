@@ -18,6 +18,14 @@ export function supprimerToken() {
 }
 
 /**
+ * Formate un montant en Francs CFA (FCFA), sans décimales (usage courant).
+ */
+export function formaterMontant(valeur) {
+  const nombre = Number(valeur) || 0;
+  return `${nombre.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA`;
+}
+
+/**
  * Appelle l'API backend. Gère automatiquement :
  * - l'ajout du token JWT si présent
  * - le cas où le service Render dort encore (timeout long au 1er appel)
@@ -46,7 +54,6 @@ async function appelApi(chemin, options = {}) {
     );
   }
 
-  // 204 No Content (ex: suppression) : pas de corps à parser
   if (reponse.status === 204) {
     return null;
   }
@@ -66,7 +73,7 @@ async function appelApi(chemin, options = {}) {
   return corps;
 }
 
-// --- Auth -------------------------------------------------------------
+// --- Auth / profil ------------------------------------------------------
 
 export function inscription({ email, mot_de_passe, nom_entreprise }) {
   return appelApi("/auth/inscription", {
@@ -86,7 +93,14 @@ export function obtenirUtilisateurCourant() {
   return appelApi("/auth/moi");
 }
 
-// --- Articles -----------------------------------------------------------
+export function mettreAJourProfil(donnees) {
+  return appelApi("/auth/moi", {
+    method: "PUT",
+    body: JSON.stringify(donnees),
+  });
+}
+
+// --- Articles / Produits --------------------------------------------------
 
 export function listerArticles() {
   return appelApi("/articles");
@@ -112,10 +126,18 @@ export function supprimerArticle(id) {
   });
 }
 
+export function rechercherPhotos(requete) {
+  return appelApi(`/articles-photos?q=${encodeURIComponent(requete)}`);
+}
+
 // --- Devis ----------------------------------------------------------------
 
 export function listerDevis() {
   return appelApi("/devis");
+}
+
+export function obtenirDevis(id) {
+  return appelApi(`/devis/${id}`);
 }
 
 export function creerDevis(donnees) {
@@ -149,4 +171,56 @@ export function creerMouvementStock(donnees) {
     method: "POST",
     body: JSON.stringify(donnees),
   });
+}
+
+// --- Clients ------------------------------------------------------------
+
+export function listerClients() {
+  return appelApi("/clients");
+}
+
+export function creerClient(donnees) {
+  return appelApi("/clients", {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function modifierClient(id, donnees) {
+  return appelApi(`/clients/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function supprimerClient(id) {
+  return appelApi(`/clients/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function enregistrerPaiement(clientId, donnees) {
+  return appelApi(`/clients/${clientId}/paiements`, {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
+}
+
+// --- Ventes (caisse) --------------------------------------------------------
+
+export function listerVentes() {
+  return appelApi("/ventes");
+}
+
+export function creerVente(donnees) {
+  return appelApi("/ventes", {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
+}
+
+// --- Tableau de bord ------------------------------------------------------
+
+export function obtenirResumeTableauDeBord() {
+  return appelApi("/tableau-de-bord/resume");
 }
