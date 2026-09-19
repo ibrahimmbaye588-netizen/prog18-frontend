@@ -60,11 +60,11 @@ export default function TableauDeBord() {
           <p className="sous-titre">Créer et suivre les devis clients</p>
         </Link>
 
-        <div className="carte carte-module carte-module-desactivee">
+        <Link to="/stock" className="carte carte-module">
           <span className="icone-module">📊</span>
           <h3>Stock</h3>
-          <p className="sous-titre">Bientôt disponible</p>
-        </div>
+          <p className="sous-titre">Suivre les entrées et sorties</p>
+        </Link>
       </div>
     </div>
   );
