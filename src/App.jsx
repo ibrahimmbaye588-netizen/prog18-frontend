@@ -4,6 +4,7 @@ import Inscription from "./pages/Inscription.jsx";
 import TableauDeBord from "./pages/TableauDeBord.jsx";
 import Catalogue from "./pages/Catalogue.jsx";
 import Devis from "./pages/Devis.jsx";
+import Stock from "./pages/Stock.jsx";
 import { obtenirToken } from "./api.js";
 
 function RouteProtegee({ enfant }) {
@@ -26,6 +27,10 @@ export default function App() {
       <Route
         path="/devis"
         element={<RouteProtegee enfant={<Devis />} />}
+      />
+      <Route
+        path="/stock"
+        element={<RouteProtegee enfant={<Stock />} />}
       />
     </Routes>
   );

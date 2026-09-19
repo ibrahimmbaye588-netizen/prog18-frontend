@@ -200,6 +200,11 @@ button:disabled {
   font-size: 18px;
 }
 
+.titre-section {
+  margin: 32px 0 12px;
+  font-size: 16px;
+}
+
 .bouton-principal {
   width: auto;
   margin-top: 0;

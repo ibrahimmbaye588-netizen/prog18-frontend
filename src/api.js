@@ -137,3 +137,16 @@ export function supprimerDevis(id) {
     method: "DELETE",
   });
 }
+
+// --- Stock ------------------------------------------------------------
+
+export function listerMouvementsStock() {
+  return appelApi("/stock/mouvements");
+}
+
+export function creerMouvementStock(donnees) {
+  return appelApi("/stock/mouvements", {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
+}
