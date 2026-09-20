@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   listerArticles,
   listerMouvementsStock,
@@ -7,8 +7,8 @@ import {
   obtenirUtilisateurCourant,
   supprimerToken,
 } from "../api.js";
+import BarreNavigation from "../components/BarreNavigation.jsx";
 
-const SEUIL_STOCK_BAS = 5;
 const MOUVEMENT_VIDE = { article_id: "", type: "entree", quantite: 1, motif: "" };
 
 export default function Stock() {
@@ -68,16 +68,9 @@ export default function Stock() {
   return (
     <div className="tableau-de-bord">
       <div className="entete-tableau">
-        <h1>🔧 PROG 1.8</h1>
-        <Link to="/tableau-de-bord" className="lien-secondaire" style={{ marginTop: 0 }}>
-          ← Tableau de bord
-        </Link>
-      </div>
-
-      <div className="entete-catalogue">
-        <h2>Stock</h2>
+        <h1>📊 Stock</h1>
         <button className="bouton-principal" onClick={() => ouvrirFormulaire("")}>
-          + Enregistrer un mouvement
+          + Mouvement
         </button>
       </div>
 
@@ -172,7 +165,7 @@ export default function Stock() {
                   <td>{a.nom}</td>
                   <td>{a.quantite_stock}</td>
                   <td>
-                    {a.quantite_stock < SEUIL_STOCK_BAS && (
+                    {a.quantite_stock <= (a.seuil_alerte ?? 5) && (
                       <span className="badge-statut badge-statut-refuse">Stock bas</span>
                     )}
                   </td>
@@ -227,6 +220,8 @@ export default function Stock() {
           </table>
         </div>
       )}
+
+      <BarreNavigation />
     </div>
   );
 }
