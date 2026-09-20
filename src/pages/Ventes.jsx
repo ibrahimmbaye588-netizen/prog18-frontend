@@ -11,6 +11,20 @@ import {
 } from "../api.js";
 import BarreNavigation from "../components/BarreNavigation.jsx";
 
+// Doit correspondre à MOYENS_PAIEMENT dans le backend (schemas.py)
+const MOYENS_PAIEMENT = [
+  { valeur: "especes", libelle: "Espèces" },
+  { valeur: "mobile_money", libelle: "Mobile money" },
+  { valeur: "carte", libelle: "Carte" },
+  { valeur: "virement", libelle: "Virement" },
+  { valeur: "cheque", libelle: "Chèque" },
+];
+
+function libelleMoyen(valeur) {
+  const moyen = MOYENS_PAIEMENT.find((m) => m.valeur === valeur);
+  return moyen ? moyen.libelle : "Espèces";
+}
+
 export default function Ventes() {
   const [articles, setArticles] = useState(null);
   const [clients, setClients] = useState([]);
@@ -19,6 +33,7 @@ export default function Ventes() {
   const [panier, setPanier] = useState([]); // { article_id, designation, prix_unitaire, quantite, stock_disponible }
   const [clientId, setClientId] = useState("");
   const [modePaiement, setModePaiement] = useState("comptant");
+  const [moyenPaiement, setMoyenPaiement] = useState("especes");
   const [montantPaye, setMontantPaye] = useState("");
   const [erreur, setErreur] = useState("");
   const [succes, setSucces] = useState("");
@@ -85,11 +100,19 @@ export default function Ventes() {
     setPanier([]);
     setClientId("");
     setModePaiement("comptant");
+    setMoyenPaiement("especes");
     setMontantPaye("");
   }
 
   async function validerVente() {
     if (panier.length === 0) return;
+
+    // Le serveur refuse une vente à crédit sans client : on prévient avant l'envoi
+    if (modePaiement === "credit" && !clientId) {
+      setErreur("Choisissez un client pour une vente à crédit.");
+      return;
+    }
+
     setEnvoiEnCours(true);
     setErreur("");
     setSucces("");
@@ -97,6 +120,7 @@ export default function Ventes() {
     const donnees = {
       client_id: clientId ? parseInt(clientId, 10) : null,
       mode_paiement: modePaiement,
+      moyen_paiement: moyenPaiement,
       montant_paye: modePaiement === "credit" ? parseFloat(montantPaye) || 0 : 0,
       lignes: panier.map((l) => ({
         article_id: l.article_id,
@@ -203,6 +227,19 @@ export default function Ventes() {
             <option value="credit">À crédit</option>
           </select>
 
+          <label htmlFor="moyen_paiement">Moyen de paiement</label>
+          <select
+            id="moyen_paiement"
+            value={moyenPaiement}
+            onChange={(e) => setMoyenPaiement(e.target.value)}
+          >
+            {MOYENS_PAIEMENT.map((m) => (
+              <option key={m.valeur} value={m.valeur}>
+                {m.libelle}
+              </option>
+            ))}
+          </select>
+
           {modePaiement === "credit" && (
             <>
               <label htmlFor="montant_paye">Montant versé maintenant (FCFA)</label>
@@ -254,6 +291,9 @@ export default function Ventes() {
                       >
                         {v.mode_paiement === "comptant" ? "Comptant" : "Crédit"}
                       </span>
+                      <div className="sous-titre" style={{ margin: "4px 0 0" }}>
+                        {libelleMoyen(v.moyen_paiement)}
+                      </div>
                     </td>
                     <td>
                       {formaterMontant(
