@@ -8,7 +8,9 @@ import {
   listerArticles,
   obtenirUtilisateurCourant,
   supprimerToken,
+  formaterMontant,
 } from "../api.js";
+import BarreNavigation from "../components/BarreNavigation.jsx";
 
 const LIGNE_VIDE = { article_id: "", designation: "", quantite: 1, prix_unitaire: "" };
 const DEVIS_VIDE = { client_nom: "", statut: "brouillon", notes: "", lignes: [{ ...LIGNE_VIDE }] };
@@ -33,7 +35,7 @@ export default function Devis() {
   const [articles, setArticles] = useState([]);
   const [erreur, setErreur] = useState("");
   const [formulaireOuvert, setFormulaireOuvert] = useState(false);
-  const [devisEnEdition, setDevisEnEdition] = useState(null); // null = création
+  const [devisEnEdition, setDevisEnEdition] = useState(null);
   const [valeurs, setValeurs] = useState(DEVIS_VIDE);
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
   const navigate = useNavigate();
@@ -163,16 +165,9 @@ export default function Devis() {
   return (
     <div className="tableau-de-bord">
       <div className="entete-tableau">
-        <h1>🔧 PROG 1.8</h1>
-        <Link to="/tableau-de-bord" className="lien-secondaire" style={{ marginTop: 0 }}>
-          ← Tableau de bord
-        </Link>
-      </div>
-
-      <div className="entete-catalogue">
-        <h2>Devis</h2>
+        <h1>📄 Devis</h1>
         <button className="bouton-principal" onClick={ouvrirCreation}>
-          + Nouveau devis
+          + Nouveau
         </button>
       </div>
 
@@ -208,6 +203,12 @@ export default function Devis() {
                 </select>
               </div>
             </div>
+
+            {valeurs.statut === "accepte" && (
+              <p className="note-info">
+                ℹ️ En acceptant ce devis, le stock des articles liés sera automatiquement déduit.
+              </p>
+            )}
 
             <label>Lignes du devis</label>
             <table className="tableau-lignes-devis">
@@ -257,7 +258,7 @@ export default function Devis() {
                     <td>
                       <input
                         type="number"
-                        step="0.01"
+                        step="1"
                         min="0"
                         className="champ-etroit"
                         value={ligne.prix_unitaire}
@@ -265,7 +266,7 @@ export default function Devis() {
                       />
                     </td>
                     <td className="cellule-sous-total">
-                      {((parseFloat(ligne.quantite) || 0) * (parseFloat(ligne.prix_unitaire) || 0)).toFixed(2)} €
+                      {formaterMontant((parseFloat(ligne.quantite) || 0) * (parseFloat(ligne.prix_unitaire) || 0))}
                     </td>
                     <td>
                       <button
@@ -286,7 +287,7 @@ export default function Devis() {
             </button>
 
             <div className="total-devis">
-              Total : <strong>{calculerTotal(valeurs.lignes).toFixed(2)} €</strong>
+              Total : <strong>{formaterMontant(calculerTotal(valeurs.lignes))}</strong>
             </div>
 
             <label htmlFor="notes">Notes (optionnel)</label>
@@ -338,9 +339,12 @@ export default function Devis() {
                       {LIBELLES_STATUT[devis.statut] || devis.statut}
                     </span>
                   </td>
-                  <td>{calculerTotal(devis.lignes).toFixed(2)} €</td>
+                  <td>{formaterMontant(calculerTotal(devis.lignes))}</td>
                   <td>{new Date(devis.cree_le).toLocaleDateString("fr-FR")}</td>
                   <td className="cellule-actions">
+                    <Link to={`/devis/${devis.id}/imprimer`} className="bouton-lien">
+                      PDF
+                    </Link>
                     <button className="bouton-lien" onClick={() => ouvrirEdition(devis)}>
                       Modifier
                     </button>
@@ -354,6 +358,8 @@ export default function Devis() {
           </table>
         </div>
       )}
+
+      <BarreNavigation />
     </div>
   );
 }
