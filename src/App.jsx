@@ -4,6 +4,8 @@ import Inscription from "./pages/Inscription.jsx";
 import TableauDeBord from "./pages/TableauDeBord.jsx";
 import Catalogue from "./pages/Catalogue.jsx";
 import Devis from "./pages/Devis.jsx";
+import Factures from "./pages/Factures.jsx";
+import ImpressionFacture from "./pages/ImpressionFacture.jsx";
 import ImpressionDevis from "./pages/ImpressionDevis.jsx";
 import Stock from "./pages/Stock.jsx";
 import Parametres from "./pages/Parametres.jsx";
@@ -49,6 +51,14 @@ export default function App() {
         path="/devis/:id/imprimer"
         element={<RouteProtegee enfant={<ImpressionDevis />} />}
       />
+      <Route
+  path="/factures"
+  element={<RouteProtegee enfant={<Factures />} />}
+/>
+<Route
+  path="/factures/:factureId/impression"
+  element={<RouteProtegee enfant={<ImpressionFacture />} />}
+/>
       <Route
         path="/stock"
         element={<RouteProtegee enfant={<Stock />} />}
