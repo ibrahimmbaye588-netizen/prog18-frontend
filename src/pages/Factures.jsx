@@ -24,6 +24,8 @@ const MOYENS_PAIEMENT = [
   { valeur: "cheque", libelle: "Chèque" },
 ];
 
+const TAUX_TVA_DEFAUT = 18;
+
 const SOURCE_LIBRE = "libre";
 const SOURCE_DEVIS = "devis";
 const SOURCE_VENTE = "vente";
@@ -43,6 +45,7 @@ export default function Factures() {
   const [venteId, setVenteId] = useState("");
   const [clientId, setClientId] = useState("");
   const [clientNomLibre, setClientNomLibre] = useState("");
+  const [bonCommande, setBonCommande] = useState("");
   const [lignesLibres, setLignesLibres] = useState([]);
   const [rechercheArticle, setRechercheArticle] = useState("");
   const [notes, setNotes] = useState("");
@@ -82,6 +85,7 @@ export default function Factures() {
     setVenteId("");
     setClientId("");
     setClientNomLibre("");
+    setBonCommande("");
     setLignesLibres([]);
     setRechercheArticle("");
     setNotes("");
@@ -101,8 +105,12 @@ export default function Factures() {
         ...lignes,
         {
           article_id: article.id,
+          code_article: article.reference || "",
           designation: article.nom,
           prix_unitaire: Number(article.prix),
+          prix_conseille: Number(article.prix),
+          taux_tva: TAUX_TVA_DEFAUT,
+          remise: 0,
           quantite: 1,
         },
       ];
@@ -117,9 +125,32 @@ export default function Factures() {
     );
   }
 
+  function changerChampLigne(articleId, champ, valeur) {
+    setLignesLibres((lignes) =>
+      lignes.map((l) => (l.article_id === articleId ? { ...l, [champ]: valeur } : l))
+    );
+  }
+
   function retirerLigneLibre(articleId) {
     setLignesLibres((lignes) => lignes.filter((l) => l.article_id !== articleId));
   }
+
+  // Aperçu des totaux (le calcul définitif est fait par le serveur)
+  const apercu = lignesLibres.reduce(
+    (acc, l) => {
+      const totalHt = l.quantite * Number(l.prix_unitaire);
+      const remise = Number(l.remise) || 0;
+      const netHt = totalHt - remise;
+      const tva = (netHt * (Number(l.taux_tva) || 0)) / 100;
+      acc.totalHt += totalHt;
+      acc.remise += remise;
+      acc.netHt += netHt;
+      acc.tva += tva;
+      acc.netAPayer += netHt + tva;
+      return acc;
+    },
+    { totalHt: 0, remise: 0, netHt: 0, tva: 0, netAPayer: 0 }
+  );
 
   async function gererCreation(e) {
     e.preventDefault();
@@ -147,13 +178,18 @@ export default function Factures() {
         vente_id: source === SOURCE_VENTE ? parseInt(venteId, 10) : null,
         statut: "emise",
         notes: notes || null,
+        bon_commande: bonCommande || null,
         lignes:
           source === SOURCE_LIBRE
             ? lignesLibres.map((l) => ({
                 article_id: l.article_id,
+                code_article: l.code_article || null,
                 designation: l.designation,
                 quantite: l.quantite,
                 prix_unitaire: l.prix_unitaire,
+                prix_conseille: l.prix_conseille || null,
+                taux_tva: l.taux_tva,
+                remise: l.remise || 0,
               }))
             : [],
       });
@@ -307,22 +343,120 @@ export default function Factures() {
                 </div>
 
                 {lignesLibres.map((l) => (
-                  <div key={l.article_id} className="ligne-panier">
-                    <div>
-                      <p className="nom-produit-vente" style={{ margin: 0 }}>{l.designation}</p>
-                      <p className="sous-titre" style={{ margin: 0 }}>{formaterMontant(l.prix_unitaire)} l'unité</p>
+                  <div
+                    key={l.article_id}
+                    className="carte"
+                    style={{ padding: 12, marginBottom: 10, background: "#f7f7f9" }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 8,
+                      }}
+                    >
+                      <div>
+                        <p className="nom-produit-vente" style={{ margin: 0 }}>{l.designation}</p>
+                        <p className="sous-titre" style={{ margin: 0 }}>
+                          Code : {l.code_article || "—"}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        className="bouton-lien bouton-danger"
+                        onClick={() => retirerLigneLibre(l.article_id)}
+                      >
+                        ×
+                      </button>
                     </div>
-                    <div className="controles-quantite">
+
+                    <div className="controles-quantite" style={{ marginBottom: 8 }}>
                       <button type="button" onClick={() => changerQuantiteLigne(l.article_id, -1)}>−</button>
                       <span>{l.quantite}</span>
                       <button type="button" onClick={() => changerQuantiteLigne(l.article_id, 1)}>+</button>
                     </div>
-                    <p className="sous-total-panier">{formaterMontant(l.quantite * l.prix_unitaire)}</p>
-                    <button type="button" className="bouton-lien bouton-danger" onClick={() => retirerLigneLibre(l.article_id)}>
-                      ×
-                    </button>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div>
+                        <label style={{ fontSize: 12 }}>Prix unitaire (FCFA)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={l.prix_unitaire}
+                          onChange={(e) =>
+                            changerChampLigne(l.article_id, "prix_unitaire", Number(e.target.value))
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 12 }}>Prix conseillé (FCFA)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={l.prix_conseille}
+                          onChange={(e) =>
+                            changerChampLigne(l.article_id, "prix_conseille", Number(e.target.value))
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 12 }}>Remise sur la ligne (FCFA)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={l.remise}
+                          onChange={(e) =>
+                            changerChampLigne(l.article_id, "remise", Number(e.target.value))
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 12 }}>TVA (%)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={l.taux_tva}
+                          onChange={(e) =>
+                            changerChampLigne(l.article_id, "taux_tva", Number(e.target.value))
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <p className="sous-total-panier" style={{ textAlign: "right", marginTop: 8 }}>
+                      {formaterMontant(
+                        Math.max(0, l.quantite * l.prix_unitaire - (Number(l.remise) || 0)) *
+                          (1 + (Number(l.taux_tva) || 0) / 100)
+                      )}
+                    </p>
                   </div>
                 ))}
+
+                {lignesLibres.length > 0 && (
+                  <div className="carte" style={{ padding: 12, marginBottom: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>Total HT</span>
+                      <span>{formaterMontant(apercu.totalHt)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>Remise</span>
+                      <span>{formaterMontant(apercu.remise)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>Total net HT</span>
+                      <span>{formaterMontant(apercu.netHt)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>TVA</span>
+                      <span>{formaterMontant(apercu.tva)}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
+                      <span>Net à payer</span>
+                      <span>{formaterMontant(apercu.netAPayer)}</span>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -349,6 +483,14 @@ export default function Factures() {
                 />
               </>
             )}
+
+            <label htmlFor="bon_commande">N° bon de commande (optionnel)</label>
+            <input
+              id="bon_commande"
+              type="text"
+              value={bonCommande}
+              onChange={(e) => setBonCommande(e.target.value)}
+            />
 
             <label htmlFor="notes">Notes (optionnel)</label>
             <input id="notes" type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
