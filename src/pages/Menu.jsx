@@ -22,6 +22,11 @@ export default function Menu() {
           <h3>Devis</h3>
           <p className="sous-titre">Créer et suivre les devis clients</p>
         </Link>
+        <Link to="/factures" className="carte carte-module">
+  <span className="icone-module">🧾</span>
+  <h3>Factures</h3>
+  <p className="sous-titre">Émettre et suivre les factures</p>
+</Link>
         <Link to="/stock" className="carte carte-module">
           <span className="icone-module">📊</span>
           <h3>Stock</h3>
