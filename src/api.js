@@ -223,6 +223,7 @@ export function creerVente(donnees) {
 
 export function obtenirResumeTableauDeBord() {
   return appelApi("/tableau-de-bord/resume");
+}
   // --- Factures ---------------------------------------------------------
 
 export function listerFactures() {
