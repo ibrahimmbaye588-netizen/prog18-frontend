@@ -223,4 +223,39 @@ export function creerVente(donnees) {
 
 export function obtenirResumeTableauDeBord() {
   return appelApi("/tableau-de-bord/resume");
+  // --- Factures ---------------------------------------------------------
+
+export function listerFactures() {
+  return appelApi("/factures");
+}
+
+export function creerFacture(donnees) {
+  return appelApi("/factures", {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function obtenirFacture(id) {
+  return appelApi(`/factures/${id}`);
+}
+
+export function modifierFacture(id, donnees) {
+  return appelApi(`/factures/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(donnees),
+  });
+}
+
+export function supprimerFacture(id) {
+  return appelApi(`/factures/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function enregistrerPaiementFacture(factureId, donnees) {
+  return appelApi(`/factures/${factureId}/paiements`, {
+    method: "POST",
+    body: JSON.stringify(donnees),
+  });
 }
