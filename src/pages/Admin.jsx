@@ -1,9 +1,7 @@
 import { useState } from "react";
 
-// Doit correspondre à l'URL de ton backend Render, la même que celle utilisée
-// dans api.js. Si ça ne fonctionne pas, vérifie dans api.js comment l'URL du
-// backend y est définie et dis-le-moi pour que j'ajuste cette ligne.
-const URL_API = import.meta.env.VITE_API_URL;
+// Même URL de backend que dans api.js (VITE_API_URL, avec la même valeur de secours).
+const URL_API = import.meta.env.VITE_API_URL || "https://prog18-backend.onrender.com";
 
 export default function Admin() {
   const [motDePasse, setMotDePasse] = useState("");
