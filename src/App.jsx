@@ -13,6 +13,7 @@ import Ventes from "./pages/Ventes.jsx";
 import Clients from "./pages/Clients.jsx";
 import Menu from "./pages/Menu.jsx";
 import { obtenirToken } from "./api.js";
+import Admin from "./pages/Admin.jsx";
 
 function RouteProtegee({ enfant }) {
   return obtenirToken() ? enfant : <Navigate to="/" replace />;
@@ -55,6 +56,7 @@ export default function App() {
   path="/factures"
   element={<RouteProtegee enfant={<Factures />} />}
 />
+         <Route path="/admin" element={<Admin />} />
 <Route
   path="/factures/:factureId/impression"
   element={<RouteProtegee enfant={<ImpressionFacture />} />}
