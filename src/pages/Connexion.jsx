@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { connexion, enregistrerToken } from "../api.js";
 
@@ -8,6 +8,23 @@ export default function Connexion() {
   const [erreur, setErreur] = useState("");
   const [chargement, setChargement] = useState(false);
   const navigate = useNavigate();
+
+  // Position relative de la souris sur le volet de gauche (0-100), utilisée
+  // pour le reflet lumineux et le léger déplacement des repères d'angle —
+  // une évocation du reflet mouvant sur une surface d'aluminium brossé.
+  const [survol, setSurvol] = useState(false);
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const voletRef = useRef(null);
+
+  function gererMouvementSouris(e) {
+    const cadre = voletRef.current.getBoundingClientRect();
+    const x = ((e.clientX - cadre.left) / cadre.width) * 100;
+    const y = ((e.clientY - cadre.top) / cadre.height) * 100;
+    setPosition({ x, y });
+  }
+
+  const decalageX = (position.x - 50) * 0.12;
+  const decalageY = (position.y - 50) * 0.12;
 
   async function gererSoumission(e) {
     e.preventDefault();
@@ -68,11 +85,19 @@ export default function Connexion() {
             repeating-linear-gradient(90deg, #6b7686 0, #6b7686 1px, transparent 1px, transparent 48px);
         }
 
+        .ecran-connexion .reflet {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+        }
+
         .ecran-connexion .reperes span {
           position: absolute;
           width: 18px;
           height: 18px;
           border: 2px solid var(--accent);
+          transition: transform 0.15s ease-out;
         }
         .ecran-connexion .reperes span:nth-child(1) { top: 48px; left: 48px; border-right: none; border-bottom: none; }
         .ecran-connexion .reperes span:nth-child(2) { bottom: 48px; right: 48px; border-left: none; border-top: none; }
@@ -85,6 +110,7 @@ export default function Connexion() {
           line-height: 1.02;
           letter-spacing: -0.01em;
           margin: 0;
+          transition: transform 0.15s ease-out;
         }
 
         .ecran-connexion .marque small {
@@ -94,8 +120,8 @@ export default function Connexion() {
           font-size: 17px;
           color: var(--texte-att);
           margin-top: 20px;
-          max-width: 34ch;
-          line-height: 1.5;
+          max-width: 36ch;
+          line-height: 1.55;
         }
 
         .ecran-connexion .marque-trait {
@@ -183,11 +209,11 @@ export default function Connexion() {
           background: var(--accent);
           color: #1a1408;
           border: none;
-          border-radius: 4px;
+          border-radius: 999px;
           font-family: 'IBM Plex Sans', sans-serif;
           font-weight: 600;
           font-size: 15px;
-          padding: 13px 16px;
+          padding: 14px 16px;
           cursor: pointer;
           transition: background 0.15s ease;
         }
@@ -245,14 +271,39 @@ export default function Connexion() {
         }
       `}</style>
 
-      <div className="volet-identite">
+      <div
+        className="volet-identite"
+        ref={voletRef}
+        onMouseMove={gererMouvementSouris}
+        onMouseEnter={() => setSurvol(true)}
+        onMouseLeave={() => {
+          setSurvol(false);
+          setPosition({ x: 50, y: 50 });
+        }}
+      >
+        <div
+          className="reflet"
+          style={{
+            opacity: survol ? 1 : 0,
+            background: `radial-gradient(480px circle at ${position.x}% ${position.y}%, rgba(232,147,58,0.16), transparent 62%)`,
+          }}
+        ></div>
+
         <div className="reperes">
-          <span></span>
-          <span></span>
+          <span style={{ transform: `translate(${decalageX}px, ${decalageY}px)` }}></span>
+          <span style={{ transform: `translate(${-decalageX}px, ${-decalageY}px)` }}></span>
         </div>
-        <h1 className="marque">
+
+        <h1
+          className="marque"
+          style={{ transform: `translate(${decalageX * 0.6}px, ${decalageY * 0.6}px)` }}
+        >
           Prog 1.8
-          <small>Devis, factures, stock et clients — piloté depuis un seul endroit, pensé pour l'atelier autant que pour le bureau.</small>
+          <small>
+            Un devis qui devient facture, un article qui sort du stock, un paiement qui
+            solde un client : la même information suivie du premier chiffrage jusqu'au
+            règlement.
+          </small>
         </h1>
         <div className="marque-trait"></div>
       </div>
